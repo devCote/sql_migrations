@@ -16,6 +16,11 @@ const pool = new pg.Pool({
 const app = express();
 app.use(express.urlencoded({ extended: true }));
 
+app.get('/count', async (req, res) => {
+  const data = await pool.query(`SELECT Count(*) AS count FROM posts`);
+  res.send(`<h1>${data.rows[0].count}</h1>`);
+});
+
 app.get('/', async (req, res) => {
   const { rows } = await pool.query(`
   SELECT * FROM posts;
@@ -62,7 +67,11 @@ app.get('/', async (req, res) => {
 app.post('/', async (req, res) => {
   const { lng, lat } = req.body;
 
-  await pool.query('INSERT INTO posts (lat, lng) VALUES ($1, $2);', [lat, lng]);
+  await pool.query('INSERT INTO posts (lat, lng, loc) VALUES ($1, $2, $3);', [
+    lat,
+    lng,
+    `(${lng},${lat})`,
+  ]);
 
   res.redirect('/');
 });
