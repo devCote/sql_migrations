@@ -16,12 +16,12 @@ const pool = new pg.Pool({
 const app = express();
 app.use(express.urlencoded({ extended: true }));
 
-app.get('/count', async (req, res) => {
+app.get('/count', async (_req, res) => {
   const data = await pool.query(`SELECT Count(*) AS count FROM posts`);
   res.send(`<h1>${data.rows[0].count}</h1>`);
 });
 
-app.get('/', async (req, res) => {
+app.get('/', async (_req, res) => {
   const { rows } = await pool.query(`
   SELECT * FROM posts;
   `);
